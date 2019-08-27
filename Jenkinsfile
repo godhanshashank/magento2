@@ -38,12 +38,6 @@ pipeline {
     }
     stage('Deploy') {
       agent any
-      when {
-        expression {
-          BRANCH_NAME == /(master)/ || BRANCH_NAME == /(staging)/
-        }
-
-      }
       steps {
         echo 'Deploying '+ARTIFACT+' to '+SSH_SERVER+'...'
         sshPublisher(failOnError: true, publishers: [
