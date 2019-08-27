@@ -43,6 +43,7 @@ args '-v ${PWD}:/var/www/html -v ${HOME}/.composer:/.composer -v ${HOME}/.npm:/.
 steps {
 sh 'composer install'
 sh 'sh apply-patch.sh'
+sh 'php bin/magento module:enable --all'
 sh 'php bin/magento setup:di:compile'
 sh 'bin/magento setup:static-content:deploy -f'
 sh 'git checkout -- .'
