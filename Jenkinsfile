@@ -43,6 +43,7 @@ args '-v ${PWD}:/var/www/html -v ${HOME}/.composer:/.composer -v ${HOME}/.npm:/.
 }
 steps {
 sh 'composer install'
+sh 'php bin/magento module:enable --all'
 sh 'php bin/magento setup:di:compile'
 sh 'bin/magento setup:static-content:deploy -f'
 sh 'git checkout -- .'
@@ -107,7 +108,7 @@ ln -s "\$RELEASE_DIR" public_html
 
 echo "Running deploy script..."
 cd "\$RELEASE_DIR"
-sh "\$ROOT_DIR/scripts/deploy.sh" --disable-compilation --disable-static-content-deploy
+#sh "\$ROOT_DIR/scripts/deploy.sh" --disable-compilation --disable-static-content-deploy
 
 echo "Removing older releases..."
 cd "\$RELEASE_DIR/.."
