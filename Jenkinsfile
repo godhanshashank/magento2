@@ -44,57 +44,7 @@ pipeline {
       }
       steps {
         echo 'Deploying '+ARTIFACT+' to '+SSH_SERVER+'...'
-        sshPublisher(failOnError: true, publishers: [
-          sshPublisherDesc(
-            configName: "${SSH_SERVER}",
-            transfers: [
-              sshTransfer(
-                execCommand: """
-                set -e
-
-                umask 007
-                mv "./${ARTIFACT}" "${PROJECT_ROOT}";
-                cd "${PROJECT_ROOT}";
-
-                ROOT_DIR=/home/emizen/
-                RELEASE_DIR=~+/"releases/build-${BUILD_ID}"
-
-                echo "Creating release folder..."
-                mkdir -p "\$RELEASE_DIR"
-
-                echo "Extracting build..."
-                tar -xzf "${ARTIFACT}" -C "\$RELEASE_DIR";
-                rm "${ARTIFACT}";
-
-                echo "Symlinking release..."
-                rm -f "\$RELEASE_DIR/app/etc/env.php"
-                ln -s "\$ROOT_DIR/shared/app/etc/env.php" "\$RELEASE_DIR/app/etc/env.php"
-
-                rm -rf "\$RELEASE_DIR/pub/media"
-                ln -s "\$ROOT_DIR/shared/media" "\$RELEASE_DIR/pub/media"
-
-                rm -rf "\$RELEASE_DIR/var"
-                ln -s "\$ROOT_DIR/shared/var" "\$RELEASE_DIR/var"
-
-                rm -f public_html
-                ln -s "\$RELEASE_DIR" public_html
-
-                echo "Running deploy script..."
-                cd "\$RELEASE_DIR"
-                sh "\$ROOT_DIR/scripts/deploy.sh" --disable-compilation --disable-static-content-deploy
-
-                echo "Removing older releases..."
-                cd "\$RELEASE_DIR/.."
-                ls -tQ | tail -n+2 | xargs --no-run-if-empty sudo rm -rf
-
-                echo "Done"
-                """,
-                execTimeout: 90000000,
-                sourceFiles: "${ARTIFACT}"
-              )
-            ]
-          )
-        ])
+        sshPublisher(failOnError: true, publishers: [          sshPublisherDesc(            configName: "${SSH_SERVER}",            transfers: [              sshTransfer(                execCommand: """                set -e                umask 007                mv "./${ARTIFACT}" "${PROJECT_ROOT}";                cd "${PROJECT_ROOT}";                 RELEASE_DIR=~+/"releases/build-${BUILD_ID}"                echo "Creating release folder..."                mkdir -p "\$RELEASE_DIR"                echo "Extracting build..."                tar -xzf "${ARTIFACT}" -C "\$RELEASE_DIR";                rm "${ARTIFACT}";                echo "Symlinking release..."                rm -f "\$RELEASE_DIR/app/etc/env.php"                ln -s "/home/emizen/shared/app/etc/env.php" "\$RELEASE_DIR/app/etc/env.php"                rm -rf "\$RELEASE_DIR/pub/media"                ln -s "/home/emizen/shared/media" "\$RELEASE_DIR/pub/media"                rm -rf "\$RELEASE_DIR/var"                ln -s "/home/emizen/shared/var" "\$RELEASE_DIR/var"                rm -f public_html                ln -s "\$RELEASE_DIR" public_html                echo "Running deploy script..."                cd "\$RELEASE_DIR"                echo "Removing older releases..."                cd "\$RELEASE_DIR/.."                ls -tQ | tail -n+2 | xargs --no-run-if-empty sudo rm -rf                echo "Done"                """,                execTimeout: 90000000,                sourceFiles: "${ARTIFACT}"              )            ]          )        ])
         sh 'rm "${ARTIFACT}"'
       }
     }
